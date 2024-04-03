@@ -40,12 +40,12 @@
         Min Width (px)
         <input type="number" min="0" v-model="settings.minWidth" placeholder="(Use Scale)"/>
       </div>
-      <div class="setting" title="Forces the QR version (recommended to keep this disabled).">
+      <div class="setting" title="Forces the QR version. Disable to use the lowest required version.">
         <input type="checkbox" v-model="settings.forcedVersionEnabled" id="force-version"/>
         <label for="force-version">Force Version</label>
         <input type="number" min="1" max="40" @change="settings.forcedVersionEnabled = true" v-model="settings.forcedVersion" placeholder="1-40"/>
       </div>
-      <div class="setting" title="Forces a mask pattern.">
+      <div class="setting" title="Forces a mask pattern. Disable to use the best-evaluated mask pattern.">
         <input type="checkbox" v-model="settings.maskPatternEnabled" id="force-mask-pattern"/>
         <label for="force-mask-pattern">Force Mask</label>
         <input type="number" min="0" max="7" @change="settings.maskPatternEnabled = true" v-model="settings.maskPattern" placeholder="0-7"/>
