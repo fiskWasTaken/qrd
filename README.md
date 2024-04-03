@@ -1,6 +1,8 @@
 # QRD
 
-A frontend for node-qrcode. Because finding online tools to generate QR codes is annoying for some reason. 
+A frontend for node-qrcode. Because finding online tools to generate QR codes is annoying for some reason.
+
+This repository is hosted online at https://qrd.fisk.cc.
 
 ## Project setup
 ```
