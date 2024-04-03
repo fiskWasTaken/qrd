@@ -1,21 +1,17 @@
 <template>
   <div class="container">
-    <div>
+    <div class="main">
+      <div class="qrd-logo" />
       <div>
-        <div class="qrd">
-          QRD
-        </div>
-        <div>
-          <input type="text" class="qr-text" v-model="settings.qrText" placeholder="Type an URL or some text"/>
-        </div>
-        <div class="color-settings">
-          <input type="color" v-model="settings.foreColor" title="Foreground"/>
-          <input type="color" v-model="settings.backColor" title="Background" />
-          <div class="setting">
-            <input type="checkbox" :checked="settings.backAlpha === 0" id="transparency" @click="() => {
+        <input type="text" class="qr-text" v-model="settings.qrText" placeholder="Type an URL or some text"/>
+      </div>
+      <div class="color-settings">
+        <input type="color" v-model="settings.foreColor" title="Foreground"/>
+        <input type="color" v-model="settings.backColor" title="Background" />
+        <div class="setting">
+          <input type="checkbox" :checked="settings.backAlpha === 0" id="transparency" @click="() => {
             settings.backAlpha = settings.backAlpha === 0 ? 255 : 0
           }"/> <label for="transparency">Transparent</label>
-          </div>
         </div>
       </div>
       <div class="advanced-toggle">
@@ -272,9 +268,10 @@ function toSVG() {
   border-color : #a1d2bb;
   color: #fff;
   font-weight: bold;
-  padding: 0.5em 0.8em;
+  padding: 0.5em 0.7em;
   line-height: 1;
   cursor: pointer;
+  font-size: 1.05em;
 }
 
 body {
@@ -326,6 +323,7 @@ input[type=text], input[type=number] {
   display: flex;
   align-items: center;
   justify-content: center;
+  column-gap: 0.3em;
 }
 
 .advanced-options {
@@ -377,9 +375,20 @@ a {
   font-weight: bold;
 }
 
-.qrd {
-  color: #779b8a;
-  font-size: 4em;
-  font-weight: 900;
+.qrd-logo {
+  background: {
+    image: url("../public/favicon.png");
+    size: contain;
+  };
+
+  width: 96px;
+  height: 96px;
+  margin-bottom: 0.5em;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>
