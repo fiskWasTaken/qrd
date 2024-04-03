@@ -299,6 +299,11 @@ const qrTextSource = computed(() => {
 function updateQR() {
   putSettingsToStorage()
 
+  if (settings.tab === "wifi" && settings.wifiConfig.ssid === '') {
+    lastError.value = "You must provide an SSID."
+    return
+  }
+
   QRCode.toCanvas(qrPreview.value, qrTextSource.value, buildOptions(), (error) => {
     lastError.value = error?.message
     renderedSize.value = qrPreview.value?.width ?? 0
