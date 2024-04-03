@@ -1,4 +1,6 @@
-# qrify
+# QRD
+
+A frontend for node-qrcode. Because finding online tools to generate QR codes is annoying for some reason. 
 
 ## Project setup
 ```
