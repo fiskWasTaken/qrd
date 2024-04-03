@@ -2,8 +2,63 @@
   <div class="container">
     <div class="main">
       <div class="qrd-logo"/>
-      <div>
+      <div class="tabs">
+        <div class="tab" :class="{active: settings.tab === 'text'}" @click="settings.tab = 'text'">
+          Text & URL
+        </div>
+        <div class="tab" :class="{active: settings.tab === 'wifi'}" @click="settings.tab = 'wifi'">
+          WiFi
+        </div>
+      </div>
+      <div v-if="settings.tab === 'text'">
         <input type="text" class="qr-text" v-model="settings.qrText" placeholder="Type an URL or some text"/>
+      </div>
+      <div v-if="settings.tab === 'wifi'" class="wifi-config">
+        <div>
+          SSID <input type="text" v-model="settings.wifiConfig.ssid" placeholder="SSID" />
+        </div>
+        <div class="setting">
+          Security
+          <select v-model="settings.wifiConfig.security">
+            <option value="">None</option>
+            <option value="WEP">WEP</option>
+            <option value="WPA">WPA</option>
+            <option value="WPA2-EAP">WPA2-EAP</option>
+          </select>
+        </div>
+        <div v-if="settings.wifiConfig.security !== ''">
+          Password <input type="text" v-model="settings.wifiConfig.password" placeholder="Password" />
+        </div>
+        <template v-if="settings.wifiConfig.security === 'WPA2-EAP'">
+          <div class="setting">
+            EAP Method
+            <select v-model="settings.wifiConfig.eapMethod">
+              <option value="TTLS">TTLS</option>
+              <option value="PWD">PWD</option>
+            </select>
+          </div>
+          <div>
+            Anonymous Identity <input type="text" v-model="settings.wifiConfig.anonymousIdentity" placeholder="SSID" />
+          </div>
+          <div>
+            Identity <input type="text" v-model="settings.wifiConfig.identity" placeholder="SSID" />
+          </div>
+          <div class="setting">
+            Phase 2 Method
+            <select v-model="settings.wifiConfig.phase2Method">
+              <option value="MSCHAPV2">MSCHAPV2</option>
+              <option value="TLS">TLS</option>
+              <option value="MD5">MD5</option>
+            </select>
+          </div>
+        </template>
+
+        <div class="setting">
+          <input type="checkbox" v-model="settings.wifiConfig.hidden" id="wifi-hidden" />
+          <label for="wifi-hidden">Hidden Network</label>
+        </div>
+
+        <input type="text" class="qr-text-wifi" v-model="wifiString" disabled />
       </div>
       <div class="color-settings">
         <input type="color" v-model="settings.foreColor" title="Foreground"/>
@@ -30,15 +85,15 @@
       </div>
       <div class="setting" title="Set the scale factor.">
         Scale
-        <input type="number" min="0" v-model="settings.scale" placeholder="0"/>
+        <input type="number" min="0" v-model="settings.scale" placeholder="4"/>
       </div>
       <div class="setting" title="Set the margin. Governed by the scale factor.">
         Margin
         <input type="number" min="0" v-model="settings.margin" placeholder="0"/>
       </div>
       <div class="setting" title="Set the minimum width (px). Leave blank to only use the scale factor.">
-        Min Width (px)
-        <input type="number" min="0" v-model="settings.minWidth" placeholder="(Use Scale)"/>
+        Min Width
+        <input type="number" min="0" v-model="settings.minWidth" placeholder="0"/>px
       </div>
       <div class="setting" title="Forces the QR version. Disable to use the lowest required version.">
         <input type="checkbox" v-model="settings.forcedVersionEnabled" id="force-version"/>
@@ -101,7 +156,7 @@
 
 <script setup>
 import * as QRCode from 'qrcode'
-import {onMounted, reactive, ref, watch} from "vue";
+import {computed, onMounted, reactive, ref, watch} from "vue";
 
 const qrPreview = ref(null)
 const expandWhy = ref(false)
@@ -119,11 +174,61 @@ watch(settings, () => {
   bounceTimer = setTimeout(updateQR, 100)
 })
 
+function meCardEscape(val) {
+  return val
+      .replace('\\', '\\\\')
+      .replace(';', '\\;')
+      .replace(',', '\\,')
+      .replace('"', '\\"')
+      .replace(':', '\\:')
+}
+
+const wifiString = computed(() => {
+  const cfg = settings.wifiConfig
+
+  const params = [
+    ['S', meCardEscape(cfg.ssid)],
+  ]
+
+  if (cfg.security !== '') {
+    params.push(['T', cfg.security])
+
+    if (cfg.password !== '') {
+      params.push(['P', cfg.password])
+    }
+  }
+
+  if (cfg.security === 'WPA2-EAP') {
+    if (cfg.eapMethod !== '') {
+      params.push(['E', cfg.eapMethod])
+    }
+
+    if (cfg.anonymousIdentity !== '') {
+      params.push(['A', cfg.anonymousIdentity])
+    }
+
+    if (cfg.identity !== '') {
+      params.push(['I', cfg.identity])
+    }
+
+    if (cfg.phase2Method !== '') {
+      params.push(['PH2', cfg.phase2Method])
+    }
+  }
+
+
+  if (cfg.hidden) {
+    params.push(['H', 'true'])
+  }
+
+  return `WIFI:${params.map(p => p.join(':')).join(';')};;`
+})
+
 function getSettingsFromStorage() {
   const stored = localStorage.getItem("settings")
 
   if (stored != null) {
-    return JSON.parse(stored)
+    return {...getDefaultSettings(), ...JSON.parse(stored)}
   }
 
   return getDefaultSettings()
@@ -144,6 +249,17 @@ function getDefaultSettings() {
     forcedVersionEnabled: false,
     forcedVersion: 1,
     qrText: "https://google.co.uk",
+    wifiConfig: {
+      ssid: "",
+      password: "",
+      security: "WPA",
+      eapMethod: "TTLS",
+      anonymousIdentity: "",
+      identity: "",
+      phase2Method: "MSCHAPV2",
+      hidden: false,
+    },
+    tab: "text",
     showAdvancedOptions: false,
   }
 }
@@ -172,10 +288,18 @@ function buildOptions() {
   }
 }
 
+const qrTextSource = computed(() => {
+  if (settings.tab === "wifi") {
+    return wifiString.value
+  } else {
+    return settings.qrText
+  }
+})
+
 function updateQR() {
   putSettingsToStorage()
 
-  QRCode.toCanvas(qrPreview.value, settings.qrText, buildOptions(), (error) => {
+  QRCode.toCanvas(qrPreview.value, qrTextSource.value, buildOptions(), (error) => {
     lastError.value = error?.message
     renderedSize.value = qrPreview.value?.width ?? 0
   })
@@ -192,7 +316,7 @@ function toPNG() {
   const opts = buildOptions()
   opts.type = 'image/png'
 
-  QRCode.toDataURL(settings.qrText, opts).then(data => {
+  QRCode.toDataURL(qrTextSource.value, opts).then(data => {
     download("qr.png", data)
   })
 }
@@ -201,7 +325,7 @@ function toSVG() {
   const opts = buildOptions()
   opts.type = 'svg'
 
-  QRCode.toString(settings.qrText, opts).then(data => {
+  QRCode.toString(qrTextSource.value, opts).then(data => {
     download("qr.svg", `data:image/svg+xml;base64,${btoa(data)}`)
   })
 }
@@ -328,6 +452,10 @@ input[type=text], input[type=number] {
   max-width: 90vw;
 }
 
+.qr-text-wifi {
+  width: 100%;
+}
+
 .last-error {
   padding: 0.5em;
   max-width: 400px;
@@ -338,6 +466,7 @@ input[type=text], input[type=number] {
   align-items: center;
   justify-content: center;
   column-gap: 0.3em;
+  width: 100%;
 }
 
 .advanced-options {
@@ -355,6 +484,10 @@ input[type=text], input[type=number] {
   display: flex;
   align-items: center;
   column-gap: 0.3em;
+
+  input {
+    max-width: 5em;
+  }
 }
 
 .advanced-toggle {
@@ -409,4 +542,36 @@ a {
 select {
   @extend %border;
 }
+
+.tabs {
+  display: flex;
+  column-gap: 1em;
+}
+
+.tab {
+  &.active {
+    color: var(--accent-dark);
+    text-decoration-color: var(--accent-dark);
+  }
+
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  color: var(--accent-light);
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.8em;
+  transition: all 0.3s;
+}
+
+.wifi-config {
+  @extend %border;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  background-color: #fff;
+  padding: 0.5em;
+  width: 40em;
+  max-width: 90vw;
+}
+
 </style>
