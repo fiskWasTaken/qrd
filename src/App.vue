@@ -28,7 +28,7 @@
         Background Alpha
         <input type="number" min="0" max="255" v-model="settings.backAlpha" placeholder="0-255"/>
       </div>
-      <div class="setting" title="Set the scale.">
+      <div class="setting" title="Set the scale. Will not work if min width is set.">
         Scale
         <input type="number" min="0" v-model="settings.scale" placeholder="0"/>
       </div>
@@ -36,9 +36,9 @@
         Margin
         <input type="number" min="0" v-model="settings.margin" placeholder="0"/>
       </div>
-      <div class="setting" title="Set the minimum width (px).">
+      <div class="setting" title="Set the minimum width (px). Leave blank to use the scale option.">
         Min Width
-        <input type="number" min="0" v-model="settings.minWidth" placeholder="0px"/>
+        <input type="number" min="0" v-model="settings.minWidth" placeholder="unset"/>
       </div>
       <div class="setting" title="Forces the QR version (should keep this off, it is selected automatically).">
         <input type="checkbox" v-model="settings.forcedVersionEnabled" id="force-version"/>
@@ -390,5 +390,9 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+select {
+  @extend %border;
 }
 </style>
