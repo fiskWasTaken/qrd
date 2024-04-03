@@ -556,6 +556,7 @@ select {
 
   text-decoration: underline;
   text-decoration-color: transparent;
+  cursor: pointer;
   color: var(--accent-light);
   font-weight: bold;
   text-transform: uppercase;
