@@ -28,26 +28,27 @@
         Background Alpha
         <input type="number" min="0" max="255" v-model="settings.backAlpha" placeholder="0-255"/>
       </div>
-      <div class="setting" title="Set the margin.">
-        Margin
-        <input type="number" min="0" v-model="settings.margin" placeholder="0"/>
-      </div>
-      <div class="setting" title="Set the scale. Will not work if min width is set.">
+      <div class="setting" title="Set the scale factor.">
         Scale
         <input type="number" min="0" v-model="settings.scale" placeholder="0"/>
       </div>
-      <div class="setting" title="Set the minimum width (px). Leave blank to use the scale option.">
+      <div class="setting" title="Set the margin. Governed by the scale factor.">
+        Margin
+        <input type="number" min="0" v-model="settings.margin" placeholder="0"/>
+      </div>
+      <div class="setting" title="Set the minimum width (px). Leave blank to only use the scale factor.">
         Min Width (px)
         <input type="number" min="0" v-model="settings.minWidth" placeholder="(Use Scale)"/>
       </div>
-      <div class="setting" title="Forces the QR version (should keep this off, it is selected automatically).">
+      <div class="setting" title="Forces the QR version (recommended to keep this disabled).">
         <input type="checkbox" v-model="settings.forcedVersionEnabled" id="force-version"/>
         <label for="force-version">Force Version</label>
-        <input type="number" min="1" max="40" v-model="settings.forcedVersion" placeholder="1-40"/>
+        <input type="number" min="1" max="40" @change="settings.forcedVersionEnabled = true" v-model="settings.forcedVersion" placeholder="1-40"/>
       </div>
-      <div class="setting" title="Set the mask pattern.">
-        Mask Pattern
-        <input type="number" min="0" max="7" v-model="settings.maskPattern" placeholder="0-7"/>
+      <div class="setting" title="Forces a mask pattern.">
+        <input type="checkbox" v-model="settings.maskPatternEnabled" id="force-mask-pattern"/>
+        <label for="force-mask-pattern">Force Mask</label>
+        <input type="number" min="0" max="7" @change="settings.maskPatternEnabled = true" v-model="settings.maskPattern" placeholder="0-7"/>
       </div>
       <div class="setting" title="Error Correction Level (Default: Medium).">
         Error Correction Level
@@ -134,6 +135,7 @@ function getDefaultSettings() {
     backColor: '#FFFFFF',
     foreAlpha: 255,
     backAlpha: 255,
+    maskPatternEnabled: false,
     maskPattern: 0,
     margin: 4,
     scale: 4,
@@ -157,7 +159,7 @@ function buildOptions() {
   const backAlphaHex = Math.max(0, Math.min(255, settings.backAlpha)).toString(16).padStart(2, '0')
 
   return {
-    maskPattern: settings.maskPattern,
+    maskPattern: settings.maskPatternEnabled ? settings.maskPattern : null,
     errorCorrectionLevel: settings.errorCorrectionLevel,
     scale: settings.scale,
     width: settings.minWidth,
