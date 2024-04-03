@@ -202,15 +202,6 @@ function toPNG() {
   })
 }
 
-function toJPG() {
-  const opts = buildOptions()
-  opts.type = 'image/jpeg'
-
-  QRCode.toDataURL(settings.qrText, opts,  (e, data) => {
-    download("qr.jpg", data)
-  })
-}
-
 function toSVG() {
   const opts = buildOptions()
 
