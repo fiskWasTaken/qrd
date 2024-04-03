@@ -77,7 +77,7 @@
         <span class="why-link" @click="expandWhy = !expandWhy">Why?</span>
       </div>
       <div>
-        <span class="qrd-inline">QRD</span> &copy; fisk, 2024. <a href="https://ko-fi.com/fisktech" target="_blank">Support
+        <a href="https://github.com/fiskWasTaken/qrd" target="_blank" class="qrd-inline">QRD</a> &copy; <a target="_blank" href="https://fisk.cc">fisk</a>, 2024. <a href="https://ko-fi.com/fisktech" target="_blank">Support
         me on Ko-fi!</a>
       </div>
       <div v-if="expandWhy" class="why">
