@@ -176,11 +176,11 @@ watch(settings, () => {
 
 function meCardEscape(val) {
   return val
-      .replace('\\', '\\\\')
-      .replace(';', '\\;')
-      .replace(',', '\\,')
-      .replace('"', '\\"')
-      .replace(':', '\\:')
+      .replace(/\\/g, '\\\\')
+      .replace(/;/g, '\\;')
+      .replace(/,/g, '\\,')
+      .replace(/"/g, '\\"')
+      .replace(/:/g, '\\:')
 }
 
 const wifiString = computed(() => {
