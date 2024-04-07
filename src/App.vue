@@ -38,10 +38,10 @@
             </select>
           </div>
           <div>
-            Anonymous Identity <input type="text" v-model="settings.wifiConfig.anonymousIdentity" placeholder="SSID" />
+            Anonymous Identity <input type="text" v-model="settings.wifiConfig.anonymousIdentity" placeholder="" />
           </div>
           <div>
-            Identity <input type="text" v-model="settings.wifiConfig.identity" placeholder="SSID" />
+            Identity <input type="text" v-model="settings.wifiConfig.identity" placeholder="" />
           </div>
           <div class="setting">
             Phase 2 Method
@@ -342,6 +342,10 @@ function toSVG() {
   --accent: #517966;
   --accent-light: #779b8a;
   --accent-dark: #355d4a;
+}
+
+textarea:focus, input:focus{
+  outline: none;
 }
 
 #app {
