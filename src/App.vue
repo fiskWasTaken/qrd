@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <div class="main">
-      <div class="qrd-logo"/>
       <div class="tabs">
         <div class="tab" :class="{active: settings.tab === 'text'}" @click="settings.tab = 'text'">
           Text & URL
